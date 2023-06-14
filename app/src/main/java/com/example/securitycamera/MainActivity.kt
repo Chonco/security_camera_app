@@ -18,7 +18,7 @@ import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
     private lateinit var reportAdapter: ReportAdapter
-    private val reportReference = Firebase.database.getReference("report")
+    private val reportReference = Firebase.database.getReference("reports")
     private val nowReference = Firebase.database.getReference("now")
     private val reportsDisplaying = HashMap<String, Int>()
 
@@ -37,12 +37,13 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun sendTakeReportNowSignal() {
+        Log.i("MainActivity", "Sending 'Take Report Now' Signal")
         nowReference.setValue("now")
     }
 
     private fun toFullImageActivity(report: Report) {
         val intent = Intent(this, ViewFullImage::class.java)
-        intent.putExtra("imgURL", report.imageUrl)
+        intent.putExtra("imgURL", report.imageURL)
         startActivity(intent)
     }
 
@@ -57,31 +58,37 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun listenReportsReference() {
+        Log.i("MainActivity", "Listening reports reference")
         reportReference.addChildEventListener(reportListener)
     }
 
     private fun stopListeningReportReference() {
+        Log.i("MainActivity", "Stop listening reports reference")
+        reportAdapter.submitList(null)
         reportReference.removeEventListener(reportListener)
     }
 
     private val reportListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            reportAdapter.currentList.add(snapshot.getValue<Report>())
-            reportsDisplaying[snapshot.key!!] = reportAdapter.currentList.size - 1
-            reportAdapter.notifyItemInserted(reportAdapter.currentList.size - 1)
+            val tempList = reportAdapter.currentList.toMutableList()
+            val value = snapshot.getValue<Report>()
+            tempList.add(value)
+            reportsDisplaying[snapshot.key!!] = tempList.size - 1
+            reportAdapter.submitList(tempList)
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             val index = reportsDisplaying[snapshot.key] ?: return
+            val tempList = reportAdapter.currentList as MutableList
 
-            reportAdapter.currentList[index] = snapshot.getValue<Report>()
-            reportAdapter.notifyItemChanged(index)
+            tempList[index] = snapshot.getValue<Report>()
+
+            reportAdapter.submitList(tempList)
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
             val index = reportsDisplaying[snapshot.key] ?: return
-
-            reportAdapter.currentList.removeAt(index)
+            reportsDisplaying.remove(snapshot.key)
             reportAdapter.notifyItemRemoved(index)
         }
 

@@ -1,10 +1,9 @@
 package com.example.securitycamera.model
 
 import java.io.Serializable
-import java.util.Date
 
 class Report(
-    var createdAt: Date,
-    var byUser: Boolean,
-    var imageUrl: String
+    var createdAt: String? = null,
+    var byUser: Boolean? = null,
+    var imageURL: String? = null
 ): Serializable

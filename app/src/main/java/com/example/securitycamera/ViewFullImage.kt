@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
 import com.bumptech.glide.Glide
+import com.example.securitycamera.util.GlideApp
 import com.google.firebase.storage.FirebaseStorage
 
 class ViewFullImage : ComponentActivity() {
@@ -11,6 +12,7 @@ class ViewFullImage : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_view_full_image)
 
         val imageURL = intent.getStringExtra("imgURL")
 
@@ -19,8 +21,10 @@ class ViewFullImage : ComponentActivity() {
 
         val imageView = findViewById<ImageView>(R.id.image_full_holder)
 
-        Glide.with(baseContext)
+        GlideApp.with(baseContext)
             .load(firebaseStorageReference.child(imageURL!!))
             .into(imageView)
     }
+
+
 }
