@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1064242274148",
+    "firebase_url": "https://movement-sensor-iot-default-rtdb.firebaseio.com",
+    "project_id": "movement-sensor-iot",
+    "storage_bucket": "movement-sensor-iot.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064242274148:android:f5b704f525fb44e66fa471",
+        "android_client_info": {
+          "package_name": "com.example.securitycamera"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064242274148-57n6uhb5bgpd2b6ft9le9lj42tlg14ob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyjLrcQfgQjTLMePN8ruF_YJBUfux3Wng"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064242274148-57n6uhb5bgpd2b6ft9le9lj42tlg14ob.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

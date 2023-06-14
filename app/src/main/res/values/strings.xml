@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Security Camera</string>
+
+    <string name="report_now">Tomar Foto Ahora</string>
+    <string name="report_image_description">Foto del reporte</string>
+    <string name="title_activity_view_full_image">ViewFullImage</string>
+</resources>
