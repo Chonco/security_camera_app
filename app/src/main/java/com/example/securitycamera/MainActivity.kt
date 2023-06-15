@@ -15,12 +15,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.util.Collections
 
 class MainActivity : ComponentActivity() {
     private lateinit var reportAdapter: ReportAdapter
     private val reportReference = Firebase.database.getReference("reports")
     private val nowReference = Firebase.database.getReference("now")
-    private val reportsDisplaying = HashMap<String, Int>()
+    private val threadSafeReports = Collections.synchronizedMap(LinkedHashMap<String, Report>())
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,26 +72,27 @@ class MainActivity : ComponentActivity() {
 
     private val reportListener = object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            val tempList = reportAdapter.currentList.toMutableList()
-            val value = snapshot.getValue<Report>()
-            tempList.add(value)
-            reportsDisplaying[snapshot.key!!] = tempList.size - 1
-            reportAdapter.submitList(tempList)
+            synchronized(threadSafeReports) {
+                threadSafeReports[snapshot.key] = snapshot.getValue<Report>()
+                val tempList = threadSafeReports.values.toMutableList()
+                reportAdapter.submitList(tempList)
+            }
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-            val index = reportsDisplaying[snapshot.key] ?: return
-            val tempList = reportAdapter.currentList as MutableList
-
-            tempList[index] = snapshot.getValue<Report>()
-
-            reportAdapter.submitList(tempList)
+            synchronized(threadSafeReports) {
+                threadSafeReports[snapshot.key] = snapshot.getValue<Report>()
+                val tempList = threadSafeReports.values.toMutableList()
+                reportAdapter.submitList(tempList)
+            }
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            val index = reportsDisplaying[snapshot.key] ?: return
-            reportsDisplaying.remove(snapshot.key)
-            reportAdapter.notifyItemRemoved(index)
+            synchronized(threadSafeReports) {
+                threadSafeReports.remove(snapshot.key)
+                val tempList = threadSafeReports.values.toMutableList()
+                reportAdapter.submitList(tempList)
+            }
         }
 
         override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
